@@ -1,1 +1,5 @@
-turn(right)
+defVar variable1 1
+defVar variable2 2
+defVar variable3 3
+defVar variable4 4
+defVar variable5 1

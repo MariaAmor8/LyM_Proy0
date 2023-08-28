@@ -25,7 +25,7 @@ def sigToken(token,tokensList):
     sigTok = tokensList[tokensList.index(token)+1]
     return sigTok
     
-def analizeDefVar(token,sigTok,tokensList):
+def analizeDefVar(token,sigTok,tokensList,lstVar):
     """
     alg para analizar la estructura de definir variable -> falta incluir las variables en el lenguaje
     """
@@ -33,7 +33,10 @@ def analizeDefVar(token,sigTok,tokensList):
             tokensList.pop(tokensList.index(token))
             token = sigTok
             sigTok = sigToken(token,tokensList)
+            #diccVar = {'NomVar': token['value'],'Valor':sigTok['value']}
             if sigTok['type'] == 2:
+                diccVar = {'NomVar': token['value'],'Valor':sigTok['value']}
+                lstVar.append(diccVar)
                 tokensList.pop(tokensList.index(token))
                 tokensList.pop(tokensList.index(sigTok))
             else:
@@ -136,10 +139,10 @@ def analizeDefProc(token,sigTok,tokensList):
         tokensList = False
     return tokensList
     
-def analizeStr(token,tokensList):
+def analizeStr(token,tokensList,lstVar):
     sigTok = sigToken(token,tokensList)
     if token['value'] == "defVar":
-        tokensList = analizeDefVar(token,sigTok,tokensList)
+        tokensList = analizeDefVar(token,sigTok,tokensList,lstVar)
             
     elif token['value'] == "defProc":
         tokensList = analizeDefProc(token,sigTok,tokensList)
@@ -161,17 +164,18 @@ def analizeStr(token,tokensList):
     
     return tokensList
     
-def read(token,tokensList):
+def read(token,tokensList,lstVar):
     if token["type"] == 1:
-        tokensList = analizeStr(token,tokensList)
+        tokensList = analizeStr(token,tokensList,lstVar)
     else:
         tokensList = False
     return tokensList
 
 def ejecutar():
     lista = Tokenizar('hello.txt')
+    lstVar = []
     while lista:
-        lista = read(lista[0],lista)
+        lista = read(lista[0],lista,lstVar)
         #si no se cumple alguna condición en la estructura analizada, en vez de una lista, se retorna false
         try:
             if lista[0]['type'] == 0:
@@ -179,6 +183,7 @@ def ejecutar():
                 rta = True
         except:
             rta = False
+    print(lstVar)
     print(rta)
      
 ejecutar()
