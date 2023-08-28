@@ -1,6 +1,10 @@
 import tokenize
 
+
 def Tokenizar(archivo):
+    """
+    Funcion para tokenizar el archivo leido
+    """
     tokensList = []
     pos = 0
     with tokenize.open(archivo) as f:
@@ -15,13 +19,16 @@ def Tokenizar(archivo):
             
 
 def sigToken(token,tokensList):
+    """
+    funcion que retorna el siguiente token
+    """
     sigTok = tokensList[tokensList.index(token)+1]
     return sigTok
     
+def analizeDefVar(token,sigTok,tokensList):
     """
     alg para analizar la estructura de definir variable -> falta incluir las variables en el lenguaje
     """
-def analizeDefVar(token,sigTok,tokensList):
     if sigTok['type'] == 1:
             tokensList.pop(tokensList.index(token))
             token = sigTok
