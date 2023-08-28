@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 defProc f (A,,B)
+=======
+defVar g 0
+defProc h (A,B,)
+>>>>>>> ac3c0d4430fd417bd2a9a1646bc5cda0678aa3e0
