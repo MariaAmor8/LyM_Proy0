@@ -1,0 +1,2 @@
+defVar g 0
+defProc h (A,B,)
