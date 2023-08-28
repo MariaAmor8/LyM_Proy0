@@ -1,1 +1,1 @@
-defProc f (A,,B)
+turn(left)

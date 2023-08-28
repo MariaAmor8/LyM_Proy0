@@ -42,6 +42,24 @@ def analizeDefVar(token,sigTok,tokensList):
         tokensList = False
     return tokensList
 
+def analizeTurn(token,sigTok,tokensList):
+    directions = ['left','right','around']
+    if sigTok['value'] == '(':
+        tokensList.pop(tokensList.index(token))
+        token = sigTok
+        sigTok = sigToken(token,tokensList)
+        sigSigTok = sigToken(sigTok,tokensList)
+        if sigTok['value'] in directions and sigSigTok['value'] == ')':
+            tokensList.pop(tokensList.index(token))
+            tokensList.pop(tokensList.index(sigTok))
+            tokensList.pop(tokensList.index(sigSigTok))
+        else:
+            tokensList = False 
+    else:
+        tokensList = False
+    return tokensList
+        
+
 def analizeDefProc(token,sigTok,tokensList):
     if sigTok['type'] == 1:
             tokensList.pop(tokensList.index(token))
@@ -83,6 +101,9 @@ def analizeStr(token,tokensList):
             
     elif token['value'] == "defProc":
         tokensList = analizeDefProc(token,sigTok,tokensList)
+        
+    elif token['value'] == 'turn':
+        tokensList = analizeTurn(token,sigTok,tokensList)
     
     return tokensList
     
