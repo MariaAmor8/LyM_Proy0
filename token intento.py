@@ -6,14 +6,12 @@ def Tokenizar(archivo):
     Funcion para tokenizar el archivo leido
     """
     tokensList = []
-    pos = 0
     with tokenize.open(archivo) as f:
         tokens = tokenize.generate_tokens(f.readline)
         for token in tokens:
             if token[0] != 61 and token[0] != 4:
                 diccToken = {'type':token[0],'value':token[1]}
                 tokensList.append(diccToken)
-                pos += 1
     print(tokensList)
     return tokensList
             
