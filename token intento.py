@@ -10,7 +10,7 @@ def Tokenizar(archivo):
         tokens = tokenize.generate_tokens(f.readline)
         for token in tokens:
             if token[0] != 61 and token[0] != 4:
-                diccToken = {'type':token[0],'value':token[1]}
+                diccToken = {'type':token[0],'value':token[1].lower()}
                 tokensList.append(diccToken)
     print(tokensList)
     return tokensList
@@ -139,10 +139,10 @@ def analizeDefProc(token,sigTok,tokensList):
     
 def analizeStr(token,tokensList,lstVar):
     sigTok = sigToken(token,tokensList)
-    if token['value'] == "defVar":
+    if token['value'] == "defvar":
         tokensList = analizeDefVar(token,sigTok,tokensList,lstVar)
             
-    elif token['value'] == "defProc":
+    elif token['value'] == "defproc":
         tokensList = analizeDefProc(token,sigTok,tokensList)
         
     elif token['value'] == 'turn':
@@ -151,7 +151,7 @@ def analizeStr(token,tokensList,lstVar):
     elif token['value'] == 'turnto':
         tokensList = analizeTurnTo(token,sigTok,tokensList)
         
-    elif token['value'] == 'drop' or token['value'] == 'get'or token['value'] == 'grab' or token['value'] == 'letGo':
+    elif token['value'] == 'drop' or token['value'] == 'get'or token['value'] == 'grab' or token['value'] == 'letgo':
         tokensList = analizeCommandValue(token,sigTok,tokensList)
         
     elif token['value'] == 'nop':

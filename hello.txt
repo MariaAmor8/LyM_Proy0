@@ -1,3 +1,3 @@
 defVar A 1
 defVar B 2
-defVAr C 3
+DEFVAR C 7
