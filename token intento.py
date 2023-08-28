@@ -58,7 +58,49 @@ def analizeTurn(token,sigTok,tokensList):
     else:
         tokensList = False
     return tokensList
-        
+
+def analizeTurnTo(token,sigTok,tokensList):
+    directions = ['north','south','west','east']
+    if sigTok['value'] == '(':
+        tokensList.pop(tokensList.index(token))
+        token = sigTok
+        sigTok = sigToken(token,tokensList)
+        sigSigTok = sigToken(sigTok,tokensList)
+        if sigTok['value'] in directions and sigSigTok['value'] == ')':
+            tokensList.pop(tokensList.index(token))
+            tokensList.pop(tokensList.index(sigTok))
+            tokensList.pop(tokensList.index(sigSigTok))
+        else:
+            tokensList = False 
+    else:
+        tokensList = False
+    return tokensList
+
+def analizeCommandValue(token,sigTok,tokensList):
+    if sigTok['value'] == '(':
+        tokensList.pop(tokensList.index(token))
+        token = sigTok
+        sigTok = sigToken(token,tokensList)
+        sigSigTok = sigToken(sigTok,tokensList)
+        if sigTok['type'] == 2 and sigSigTok['value'] == ')':
+            tokensList.pop(tokensList.index(token))
+            tokensList.pop(tokensList.index(sigTok))
+            tokensList.pop(tokensList.index(sigSigTok))
+        else:
+            tokensList = False 
+    else:
+        tokensList = False
+    return tokensList
+
+def analizeNop(token,sigTok,tokensList):
+    sigSigTok = sigToken(sigTok,tokensList)
+    if sigTok['value'] == '(' and sigSigTok['value'] == ')':
+        tokensList.pop(tokensList.index(token))
+        tokensList.pop(tokensList.index(sigTok))
+        tokensList.pop(tokensList.index(sigSigTok))
+    else:
+        tokensList = False
+    return tokensList
 
 def analizeDefProc(token,sigTok,tokensList):
     if sigTok['type'] == 1:
@@ -104,6 +146,18 @@ def analizeStr(token,tokensList):
         
     elif token['value'] == 'turn':
         tokensList = analizeTurn(token,sigTok,tokensList)
+        
+    elif token['value'] == 'turnto':
+        tokensList = analizeTurnTo(token,sigTok,tokensList)
+        
+    elif token['value'] == 'drop' or token['value'] == 'get'or token['value'] == 'grab' or token['value'] == 'letGo':
+        tokensList = analizeCommandValue(token,sigTok,tokensList)
+        
+    elif token['value'] == 'nop':
+        tokensList = analizeNop(token,sigTok,tokensList)
+        
+    else:
+        tokensList = False
     
     return tokensList
     
