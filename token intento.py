@@ -129,6 +129,10 @@ def analizeDefProc(token,sigTok,tokensList):
                         tokensList.pop(tokensList.index(sigTok))
                     else:
                         tokensList = False
+                
+                elif sigTok['value'] == ')':
+                    tokensList.pop(tokensList.index(token))
+                    tokensList.pop(tokensList.index(sigTok))
                 else:
                     tokensList = False 
             else:

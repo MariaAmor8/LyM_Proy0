@@ -1,3 +1,2 @@
-defVar A 1
-defVar B 2
-DEFVAR C 7
+defvar a 4
+defProc xd (b)
