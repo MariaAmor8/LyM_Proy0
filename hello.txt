@@ -1,2 +1,4 @@
 defvar a 4
-defProc xd (b)
+defProc xd (g,f,j,k,e,t)
+
+
