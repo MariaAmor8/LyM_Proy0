@@ -103,6 +103,27 @@ def analizeNop(token,sigTok,tokensList):
         tokensList = False
     return tokensList
 
+def analizeJump(token,sigTok,tokensList):
+    if sigTok['value'] == '(':
+        tokensList.pop(tokensList.index(token))
+        token = sigTok
+        sigTok = sigToken(token,tokensList)
+        sigSigTok = sigToken(sigTok,tokensList)
+        sigSigsigTok = sigToken(sigSigTok,tokensList)
+        SSSSigTok= sigToken(sigSigsigTok,tokensList)
+        if sigTok['type'] == 2 and sigSigTok['value'] == ',' and sigSigsigTok['type'] == 2 and SSSSigTok['value'] == ')':
+            tokensList.pop(tokensList.index(token))
+            tokensList.pop(tokensList.index(sigTok))
+            tokensList.pop(tokensList.index(sigSigTok))
+            tokensList.pop(tokensList.index(sigSigsigTok))
+            tokensList.pop(tokensList.index(sigSigsigTok))
+        else:
+            tokensList = False 
+    else:
+        tokensList = False
+    return tokensList
+
+
 def analizeDefProc(token,sigTok,tokensList):
     if sigTok['type'] == 1:
             tokensList.pop(tokensList.index(token))
@@ -157,6 +178,9 @@ def analizeStr(token,tokensList,lstVar):
         
     elif token['value'] == 'drop' or token['value'] == 'get'or token['value'] == 'grab' or token['value'] == 'letgo':
         tokensList = analizeCommandValue(token,sigTok,tokensList)
+
+    elif token['value']=='jump':
+        tokensList=analizeJump(token,sigTok,tokensList)
         
     elif token['value'] == 'nop':
         tokensList = analizeNop(token,sigTok,tokensList)
