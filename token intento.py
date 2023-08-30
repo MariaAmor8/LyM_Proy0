@@ -103,6 +103,33 @@ def analizeNop(token,sigTok,tokensList):
         tokensList = False
     return tokensList
 
+def analizeWalkLeap(token,sigTok,tokensList):
+    directions = ['north','south','west','east', 'left','right','around']
+    ssTok = sigToken(sigTok,tokensList)
+    if sigTok['value'] == '(' and ssTok['type'] == 2:
+        sssTok=sigToken(ssTok,tokensList)
+        if sssTok==')':
+            tokensList.pop(tokensList.index(token))
+            tokensList.pop(tokensList.index(sigTok))
+            tokensList.pop(tokensList.index(ssTok))
+            tokensList.pop(tokensList.index(sssTok))
+        elif sssTok==',':
+            ssssTok= sigToken(sssTok,tokensList)
+            sssssTok= sigToken(ssssTok,tokensList)
+            if ssssTok['value'] in directions and sssssTok['value'] == ')':
+                tokensList.pop(tokensList.index(token))
+                tokensList.pop(tokensList.index(sigTok))
+                tokensList.pop(tokensList.index(ssTok))
+                tokensList.pop(tokensList.index(sssTok))
+                tokensList.pop(tokensList.index(ssssTok))
+                tokensList.pop(tokensList.index(sssssTok))
+            else:
+                tokensList = False
+        else:
+            tokensList = False
+    else:
+            tokensList = False
+
 def analizeJump(token,sigTok,tokensList):
     if sigTok['value'] == '(':
         tokensList.pop(tokensList.index(token))
@@ -181,6 +208,9 @@ def analizeStr(token,tokensList,lstVar):
 
     elif token['value']=='jump':
         tokensList=analizeJump(token,sigTok,tokensList)
+    
+    elif token['value']=='walk' or token['value']=='leap':
+        tokensList=analizeWalkLeap(token,sigTok,tokensList)
         
     elif token['value'] == 'nop':
         tokensList = analizeNop(token,sigTok,tokensList)
