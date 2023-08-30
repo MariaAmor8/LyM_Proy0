@@ -108,12 +108,12 @@ def analizeWalkLeap(token,sigTok,tokensList):
     ssTok = sigToken(sigTok,tokensList)
     if sigTok['value'] == '(' and ssTok['type'] == 2:
         sssTok=sigToken(ssTok,tokensList)
-        if sssTok==')':
+        if sssTok['value'] ==')':
             tokensList.pop(tokensList.index(token))
             tokensList.pop(tokensList.index(sigTok))
             tokensList.pop(tokensList.index(ssTok))
             tokensList.pop(tokensList.index(sssTok))
-        elif sssTok==',':
+        elif sssTok['value'] ==',':
             ssssTok= sigToken(sssTok,tokensList)
             sssssTok= sigToken(ssssTok,tokensList)
             if ssssTok['value'] in directions and sssssTok['value'] == ')':
@@ -129,6 +129,7 @@ def analizeWalkLeap(token,sigTok,tokensList):
             tokensList = False
     else:
             tokensList = False
+    return tokensList
 
 def analizeJump(token,sigTok,tokensList):
     if sigTok['value'] == '(':
@@ -187,6 +188,7 @@ def analizeDefProc(token,sigTok,tokensList):
                 tokensList = False
     else:
         tokensList = False
+        
     return tokensList
     
 def analizeStr(token,tokensList,lstVar):
