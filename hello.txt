@@ -1,5 +1,2 @@
-defvar a 4
-defProc xd (g,f,j,k,e,t)
-leap(678,north)
 
-
+while not:facing(north) {walk(1, south)}
