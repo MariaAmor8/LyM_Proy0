@@ -1,2 +1,4 @@
+defvar v 9
+defvar e 0
 
-while not:facing(north) {walk(1, south)}
+drop(v)

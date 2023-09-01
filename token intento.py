@@ -23,7 +23,7 @@ def sigToken(token,tokensList):
     sigTok = tokensList[tokensList.index(token)+1]
     return sigTok
     
-def analizeDefVar(token,sigTok,tokensList,lstVar):
+def analizeDefVar(token,sigTok,tokensList,DiccVar):
     """
     alg para analizar la estructura de definir variable -> falta incluir las variables en el lenguaje
     """
@@ -31,10 +31,9 @@ def analizeDefVar(token,sigTok,tokensList,lstVar):
             tokensList.pop(tokensList.index(token))
             token = sigTok
             sigTok = sigToken(token,tokensList)
-            #diccVar = {'NomVar': token['value'],'Valor':sigTok['value']}
             if sigTok['type'] == 2:
-                diccVar = {'NomVar': token['value'],'Valor':sigTok['value']}
-                lstVar.append(diccVar)
+                DiccVar['lstVar'].append(token['value'])
+                DiccVar['diccVar'][token['value']] = sigTok['value']
                 tokensList.pop(tokensList.index(token))
                 tokensList.pop(tokensList.index(sigTok))
             else:
@@ -77,7 +76,7 @@ def analizeTurnTo(token,sigTok,tokensList):
         tokensList = False
     return tokensList
 
-def analizeCommandValue(token,sigTok,tokensList):
+def analizeCommandValue(token,sigTok,tokensList,DiccVar):
     if sigTok['value'] == '(':
         tokensList.pop(tokensList.index(token))
         token = sigTok
@@ -87,6 +86,15 @@ def analizeCommandValue(token,sigTok,tokensList):
             tokensList.pop(tokensList.index(token))
             tokensList.pop(tokensList.index(sigTok))
             tokensList.pop(tokensList.index(sigSigTok))
+        elif sigTok['type'] == 1 and sigSigTok['value'] == ')' and sigTok['value'] in DiccVar['lstVar']:
+            valor = DiccVar['diccVar'][sigTok['value']]
+            try:
+                nv = int(valor)
+                tokensList.pop(tokensList.index(token))
+                tokensList.pop(tokensList.index(sigTok))
+                tokensList.pop(tokensList.index(sigSigTok))
+            except:
+                tokensList = False
         else:
             tokensList = False 
     else:
@@ -176,14 +184,20 @@ def analizeNot(token,sigTok,tokensList,lstVar):
 def analizeBlock(tokensList,lstVar):
     if tokensList[0]['value'] == '{':
         tokensList.pop(0)
-        tokensList= analizeStr(tokensList[0],tokensList,lstVar)
-        if tokensList != False:
-            if tokensList[0]['value'] == '}':
-                tokensList.pop(0)
-            else:
+        s = True
+        try:
+            while tokensList[0]['type'] == 1 and s:
+                tokensList = analizeStr(tokensList[0],tokensList,lstVar)
+                if tokensList[0]['value'] == ';' and tokensList[1]['type'] == 1:
+                    tokensList.pop(0)
+                elif tokensList[0]['value'] != ';' and tokensList[0]['type'] == 1 and tokensList[1]['value'] != '}':
+                    s = False
+            if tokensList[0]['value'] != '}':
                 tokensList = False
-    else:
-        tokensList = False
+            else:
+                tokensList.pop(0)
+        except:
+            tokensList = False
     return tokensList
         
 def analizeConditional(token,sigTok,tokensList,lstVar):
@@ -252,17 +266,25 @@ def analizeDefProc(token,sigTok,tokensList):
                 tokensList = False
     else:
         tokensList = False
-        
+    return tokensList
+
+def analizeDefProcP2(token,sigTok,tokensList,lstVar):
+    if tokensList[0]['value'] == '{':
+        tokensList = analizeBlock(tokensList,lstVar)
+    else:
+        tokensList = False
     return tokensList
     
-def analizeStr(token,tokensList,lstVar):
+def analizeStr(token,tokensList,DiccVar):
     sigTok = sigToken(token,tokensList)
     if token['value'] == "defvar":
-        tokensList = analizeDefVar(token,sigTok,tokensList,lstVar)
+        tokensList = analizeDefVar(token,sigTok,tokensList,DiccVar)
             
     elif token['value'] == "defproc":
         tokensList = analizeDefProc(token,sigTok,tokensList)
-        
+        if tokensList != False:
+            tokensList = analizeDefProcP2(token,sigTok,tokensList,DiccVar)
+            
     elif token['value'] == 'turn':
         tokensList = analizeTurn(token,sigTok,tokensList)
         
@@ -270,7 +292,7 @@ def analizeStr(token,tokensList,lstVar):
         tokensList = analizeTurnTo(token,sigTok,tokensList)
         
     elif token['value'] == 'drop' or token['value'] == 'get'or token['value'] == 'grab' or token['value'] == 'letgo':
-        tokensList = analizeCommandValue(token,sigTok,tokensList)
+        tokensList = analizeCommandValue(token,sigTok,tokensList,DiccVar)
 
     elif token['value']=='jump':
         tokensList=analizeJump(token,sigTok,tokensList)
@@ -282,34 +304,38 @@ def analizeStr(token,tokensList,lstVar):
         tokensList = analizeNop(token,sigTok,tokensList)
         
     elif token['value'] == 'can':
-        tokensList = analizeCan(token,sigTok,tokensList,lstVar)
+        tokensList = analizeCan(token,sigTok,tokensList,DiccVar)
         
     elif token['value'] == 'not':
-        tokensList = analizeNot(token,sigTok,tokensList,lstVar)
+        tokensList = analizeNot(token,sigTok,tokensList,DiccVar)
         
     elif token['value'] == 'if':
-        tokensList = analizeConditional(token,sigTok,tokensList,lstVar)
+        tokensList = analizeConditional(token,sigTok,tokensList,DiccVar)
         
     elif token['value'] == 'while':
-        tokensList = analizeLoop(token,sigTok,tokensList,lstVar)
+        tokensList = analizeLoop(token,sigTok,tokensList,DiccVar)
         
+    elif token['value'] == '{':
+        tokensList = analizeBlock(tokensList,DiccVar)
+
     else:
         tokensList = False
     
     return tokensList
     
-def read(token,tokensList,lstVar):
-    if token["type"] == 1:
-        tokensList = analizeStr(token,tokensList,lstVar)
+def read(token,tokensList,DiccVar):
+    if token["type"] == 1 or token["type"] == 54:
+        tokensList = analizeStr(token,tokensList,DiccVar)
     else:
         tokensList = False
+        
     return tokensList
 
 def ejecutar():
     lista = Tokenizar('hello.txt')
-    lstVar = []
+    DiccVar = {'lstVar': [],'diccVar':{}}
     while lista:
-        lista = read(lista[0],lista,lstVar)
+        lista = read(lista[0],lista,DiccVar)
         #si no se cumple alguna condición en la estructura analizada, en vez de una lista, se retorna false
         try:
             if lista[0]['type'] == 0 or lista == []:
@@ -317,7 +343,7 @@ def ejecutar():
                 rta = True
         except:
             rta = False
-    print("lista de variables -> " + str(lstVar))
+    print("lista de variables -> " + str(DiccVar))
     print(rta)
      
 ejecutar()
