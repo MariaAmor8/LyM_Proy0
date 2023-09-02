@@ -213,6 +213,24 @@ def analizeConditional(token,sigTok,tokensList,lstVar):
             tokensList = False
     return tokensList
 
+def analizeRepeat(token,sigTok,tokensList, lstVar):
+    if sigTok['type'] == 2:
+        tokensList.pop(tokensList.index(token))
+        token = sigTok
+        sigTok = sigToken(token,tokensList)
+        sigsigTok = sigToken(sigTok,tokensList)
+        if  sigTok['value'] == 'times' and sigsigTok['value'] == '{':
+            tokensList.pop(tokensList.index(token))
+            tokensList.pop(tokensList.index(sigTok))
+            tokensList = analizeBlock(tokensList,lstVar)
+        else:
+            tokensList = False
+    else:
+            tokensList = False
+    return tokensList
+
+
+
 def analizeLoop(token,sigTok,tokensList,lstVar):
     if sigTok['type'] == 1:
         tokensList.pop(tokensList.index(token))
@@ -317,6 +335,9 @@ def analizeStr(token,tokensList,DiccVar):
         
     elif token['value'] == '{':
         tokensList = analizeBlock(tokensList,DiccVar)
+    
+    elif token['value'] == 'repeat':
+        analizeRepeat(token,sigTok,tokensList, DiccVar)
 
     else:
         tokensList = False
