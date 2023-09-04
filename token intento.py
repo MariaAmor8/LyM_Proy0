@@ -42,6 +42,18 @@ def analizeDefVar(token,sigTok,tokensList,DiccVar):
         tokensList = False
     return tokensList
 
+def analizeName(token,sigTok,tokensList,DiccVar):
+    if sigTok['value'] == '=' and tokensList[2]['type'] == 2:
+        print("entra")
+        DiccVar['lstVar'].append(token['value'])
+        DiccVar['diccVar'][token['value']] = tokensList[2]['value']
+        tokensList.pop(tokensList.index(token))
+        tokensList.pop(tokensList.index(sigTok))
+        tokensList.pop(0)
+    else: 
+        tokensList = False
+    return tokensList
+
 def analizeTurn(token,sigTok,tokensList):
     directions = ['left','right','around']
     if sigTok['value'] == '(':
@@ -292,7 +304,7 @@ def analizeLoop(token,sigTok,tokensList,lstVar):
         tokensList = False
     return tokensList
 
-def analizeDefProc(token,sigTok,tokensList,DiccProc):
+def analizeDefProc(token,sigTok,tokensList):
     tok=token['value']
     DiccProc={'listprocc':[], 'diccinfoproc':{}}
     lstprocc=DiccProc['listprocc']
@@ -397,7 +409,10 @@ def analizeStr(token,tokensList,DiccVar):
         tokensList = analizeBlock(tokensList,DiccVar)
     
     elif token['value'] == 'repeat':
-        analizeRepeat(token,sigTok,tokensList, DiccVar)
+        tokensList =analizeRepeat(token,sigTok,tokensList, DiccVar)
+        
+    elif token['type'] == 1 and sigTok['value'] == '=':
+        tokensList = analizeName(token,sigTok,tokensList,DiccVar)
 
     else:
         tokensList = False

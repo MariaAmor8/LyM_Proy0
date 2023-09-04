@@ -1,4 +1,7 @@
-defvar v 9
-defvar e 0
+value = 9
 
-drop(v)
+defProc hola(f){
+    drop(f);
+    name = 90
+}
+hola(f)
