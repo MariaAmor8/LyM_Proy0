@@ -247,7 +247,17 @@ def analizeConditional(token,sigTok,tokensList,lstVar):
             tokensList = False
     return tokensList
 
-def analizeRepeat(token,sigTok,tokensList, lstVar):
+def analizeRepeat(token,sigTok,tokensList, Diccvar):
+    listvar= Diccvar['lstVar']
+    dictvar= Diccvar['diccVar']
+    if sigTok['type'] == 1:
+            if sigTok['value'] in listvar:
+                sigTok['value']= dictvar[sigTok['value']] 
+                try:
+                    int(sigTok['value'])
+                    sigTok['type']= 2
+                except ValueError:
+                    sigTok['type']= 1
     if sigTok['type'] == 2:
         tokensList.pop(tokensList.index(token))
         token = sigTok
@@ -256,7 +266,7 @@ def analizeRepeat(token,sigTok,tokensList, lstVar):
         if  sigTok['value'] == 'times' and sigsigTok['value'] == '{':
             tokensList.pop(tokensList.index(token))
             tokensList.pop(tokensList.index(sigTok))
-            tokensList = analizeBlock(tokensList,lstVar)
+            tokensList = analizeBlock(tokensList,Diccvar)
         else:
             tokensList = False
     else:
