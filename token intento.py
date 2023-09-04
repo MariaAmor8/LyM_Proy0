@@ -282,8 +282,14 @@ def analizeLoop(token,sigTok,tokensList,lstVar):
         tokensList = False
     return tokensList
 
-def analizeDefProc(token,sigTok,tokensList):
+def analizeDefProc(token,sigTok,tokensList,DiccProc):
+    tok=token['value']
+    DiccProc={'listprocc':[], 'diccinfoproc':{}}
+    lstprocc=DiccProc['listprocc']
+    dictprocc=DiccProc['diccinfoproc']
+    lista2=[]
     if sigTok['type'] == 1:
+            lstprocc.append(token)
             tokensList.pop(tokensList.index(token))
             token = sigTok
             sigTok = sigToken(token,tokensList)
@@ -292,17 +298,22 @@ def analizeDefProc(token,sigTok,tokensList):
                 token = sigTok
                 sigTok = sigToken(token,tokensList)
                 if sigTok['type'] == 1:
+                    lista2.append(token['type'])
                     tokensList.pop(tokensList.index(token))
                     token = sigTok
                     sigTok = sigToken(token,tokensList)
                     sigSigTok = sigToken(sigTok,tokensList)
                     while sigTok['value'] == ',' and token['type'] == 1 and sigSigTok['type'] == 1:
+                        lista2.append(token['type'])
+                        lista2.append(sigTok['type'])
                         tokensList.pop(tokensList.index(token))
                         tokensList.pop(tokensList.index(sigTok))
                         token = sigSigTok
                         sigTok = sigToken(token,tokensList)
                         if sigTok['value'] != ')':
                             sigSigTok = sigToken(sigTok,tokensList)
+                        else:
+                            lista2.append(sigTok['type'])
                     if sigTok['value'] == ')':
                         tokensList.pop(tokensList.index(token))
                         tokensList.pop(tokensList.index(sigTok))
@@ -310,6 +321,8 @@ def analizeDefProc(token,sigTok,tokensList):
                         tokensList = False
                 
                 elif sigTok['value'] == ')':
+                    lista2.append(token['type'])
+                    lista2.append(sigTok['type'])
                     tokensList.pop(tokensList.index(token))
                     tokensList.pop(tokensList.index(sigTok))
                 else:
@@ -318,7 +331,10 @@ def analizeDefProc(token,sigTok,tokensList):
                 tokensList = False
     else:
         tokensList = False
+    dictprocc[tok]=lista2
+    print(DiccProc)
     return tokensList
+
 
 def analizeDefProcP2(token,sigTok,tokensList,lstVar):
     if tokensList[0]['value'] == '{':
