@@ -111,9 +111,19 @@ def analizeNop(token,sigTok,tokensList):
         tokensList = False
     return tokensList
 
-def analizeWalkLeap(token,sigTok,tokensList):
+def analizeWalkLeap(token,sigTok,tokensList,Diccvar):
+    listvar= Diccvar['lstVar']
+    dictvar= Diccvar['diccVar']
     directions = ['north','south','west','east', 'left','right','around']
     ssTok = sigToken(sigTok,tokensList)
+    if ssTok ['type'] == 1:
+            if ssTok['value'] in listvar:
+                ssTok['value']= dictvar[ssTok['value']] 
+                try:
+                    int(ssTok['value'])
+                    ssTok['type']= 2
+                except ValueError:
+                    ssTok['type']= 1
     if sigTok['value'] == '(' and ssTok['type'] == 2:
         sssTok=sigToken(ssTok,tokensList)
         if sssTok['value'] ==')':
@@ -139,25 +149,49 @@ def analizeWalkLeap(token,sigTok,tokensList):
             tokensList = False
     return tokensList
 
-def analizeJump(token,sigTok,tokensList):
+def analizeJump(token,sigTok,tokensList, Diccvar):
+    listvar= Diccvar['lstVar']
+    dictvar= Diccvar['diccVar']
     if sigTok['value'] == '(':
-        tokensList.pop(tokensList.index(token))
-        token = sigTok
-        sigTok = sigToken(token,tokensList)
-        sigSigTok = sigToken(sigTok,tokensList)
-        sigSigsigTok = sigToken(sigSigTok,tokensList)
-        SSSSigTok= sigToken(sigSigsigTok,tokensList)
+        try:
+            tokensList.pop(tokensList.index(token))
+            token = sigTok
+            sigTok = sigToken(token,tokensList)
+            sigSigTok = sigToken(sigTok,tokensList)
+            sigSigsigTok=sigToken(sigSigTok,tokensList)
+            SSSSigTok= sigToken(sigSigsigTok,tokensList)
+        except IndexError:
+            tokensList = False 
+        if sigTok['type'] == 1:
+            if sigTok['value'] in listvar:
+                sigTok['value']= dictvar[sigTok['value']] 
+                try:
+                    int(sigTok['value'])
+                    sigTok['type']= 2
+                except ValueError:
+                    sigTok['type']= 1
+        if sigSigsigTok['type'] == 1:
+            if sigSigsigTok['value'] in listvar:
+                sigSigsigTok['value']= dictvar[sigSigsigTok['value']] 
+                try:
+                    int(sigSigsigTok['value'])
+                    sigSigsigTok['type']= 2
+                except ValueError:
+                    sigSigsigTok['type']= 1
+            
         if sigTok['type'] == 2 and sigSigTok['value'] == ',' and sigSigsigTok['type'] == 2 and SSSSigTok['value'] == ')':
             tokensList.pop(tokensList.index(token))
             tokensList.pop(tokensList.index(sigTok))
             tokensList.pop(tokensList.index(sigSigTok))
             tokensList.pop(tokensList.index(sigSigsigTok))
-            tokensList.pop(tokensList.index(sigSigsigTok))
+            tokensList.pop(tokensList.index(SSSSigTok))
         else:
             tokensList = False 
     else:
         tokensList = False
     return tokensList
+
+
 
 def analizeCan(token,sigTok,tokensList,lstVar):
     ssTok = sigToken(sigTok,tokensList)
@@ -313,10 +347,10 @@ def analizeStr(token,tokensList,DiccVar):
         tokensList = analizeCommandValue(token,sigTok,tokensList,DiccVar)
 
     elif token['value']=='jump':
-        tokensList=analizeJump(token,sigTok,tokensList)
+        tokensList=analizeJump(token,sigTok,tokensList,DiccVar)
     
     elif token['value']=='walk' or token['value']=='leap':
-        tokensList=analizeWalkLeap(token,sigTok,tokensList)
+        tokensList=analizeWalkLeap(token,sigTok,tokensList,DiccVar)
         
     elif token['value'] == 'nop':
         tokensList = analizeNop(token,sigTok,tokensList)
